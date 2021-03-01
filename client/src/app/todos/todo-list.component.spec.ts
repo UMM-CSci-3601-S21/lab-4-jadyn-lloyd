@@ -14,11 +14,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
-import { MockUserService } from '../../testing/user.service.mock';
-import { User } from './todo';
-import { UserCardComponent } from './todo-card.component';
-import { UserListComponent } from './todo-list.component';
-import { UserService } from './todo.service';
+import { MockTodoService } from '../../testing/todo.service.mock';
+import { Todo } from './todo';
+import { TodoCardComponent } from './todo-card.component';
+import { TodoListComponent } from './todo-list.component';
+import { TodoService } from './todo.service';
 import { MatIconModule } from '@angular/material/icon';
 
 const COMMON_IMPORTS: any[] = [
@@ -39,89 +39,81 @@ const COMMON_IMPORTS: any[] = [
   RouterTestingModule,
 ];
 
-describe('User list', () => {
+describe('Todo list', () => {
 
-  let userList: UserListComponent;
-  let fixture: ComponentFixture<UserListComponent>;
+  let todoList: TodoListComponent;
+  let fixture: ComponentFixture<TodoListComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [COMMON_IMPORTS],
-      declarations: [UserListComponent, UserCardComponent],
-      // providers:    [ UserService ]  // NO! Don't provide the real service!
+      declarations: [TodoListComponent, TodoCardComponent],
+      // providers:    [ TodoService ]  // NO! Don't provide the real service!
       // Provide a test-double instead
-      providers: [{ provide: UserService, useValue: new MockUserService() }]
+      providers: [{ provide: TodoService, useValue: new MockTodoService() }]
     });
   });
 
   beforeEach(waitForAsync(() => {
     TestBed.compileComponents().then(() => {
-      fixture = TestBed.createComponent(UserListComponent);
-      userList = fixture.componentInstance;
+      fixture = TestBed.createComponent(TodoListComponent);
+      todoList = fixture.componentInstance;
       fixture.detectChanges();
     });
   }));
 
-  it('contains all the users', () => {
-    expect(userList.serverFilteredUsers.length).toBe(3);
+  it('contains all the todos', () => {
+    expect(todoList.serverFilteredTodos.length).toBe(3);
   });
 
-  it('contains a user named \'Chris\'', () => {
-    expect(userList.serverFilteredUsers.some((user: User) => user.name === 'Chris')).toBe(true);
+  it('contains a todo with id \'chris_id\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo._id === 'chris_id')).toBe(true);
   });
 
-  it('contain a user named \'Jamie\'', () => {
-    expect(userList.serverFilteredUsers.some((user: User) => user.name === 'Jamie')).toBe(true);
-  });
-
-  it('doesn\'t contain a user named \'Santa\'', () => {
-    expect(userList.serverFilteredUsers.some((user: User) => user.name === 'Santa')).toBe(false);
-  });
-
-  it('has two users that are 37 years old', () => {
-    expect(userList.serverFilteredUsers.filter((user: User) => user.age === 37).length).toBe(2);
+  it('contain a todo with owner named \'Chris\'', () => {
+    expect(todoList.serverFilteredTodos.some((todo: Todo) => todo.owner === 'Chris')).toBe(true);
   });
 });
 
-describe('Misbehaving User List', () => {
-  let userList: UserListComponent;
-  let fixture: ComponentFixture<UserListComponent>;
+describe('Misbehaving Todo List', () => {
+  let todoList: TodoListComponent;
+  let fixture: ComponentFixture<TodoListComponent>;
 
-  let userServiceStub: {
-    getUsers: () => Observable<User[]>;
-    getUsersFiltered: () => Observable<User[]>;
+  let todoServiceStub: {
+    getTodos: () => Observable<Todo[]>;
+    getTodosFiltered: () => Observable<Todo[]>;
   };
 
   beforeEach(() => {
-    // stub UserService for test purposes
-    userServiceStub = {
-      getUsers: () => new Observable(observer => {
+    // stub TodoService for test purposes
+    todoServiceStub = {
+      getTodos: () => new Observable(observer => {
         observer.error('Error-prone observable');
       }),
-      getUsersFiltered: () => new Observable(observer => {
+      getTodosFiltered: () => new Observable(observer => {
         observer.error('Error-prone observable');
       })
     };
 
     TestBed.configureTestingModule({
       imports: [COMMON_IMPORTS],
-      declarations: [UserListComponent],
-      // providers:    [ UserService ]  // NO! Don't provide the real service!
+      declarations: [TodoListComponent],
+      // providers:    [ TodoService ]  // NO! Don't provide the real service!
       // Provide a test-double instead
-      providers: [{ provide: UserService, useValue: userServiceStub }]
+      providers: [{ provide: TodoService, useValue: todoServiceStub }]
     });
   });
 
   beforeEach(waitForAsync(() => {
     TestBed.compileComponents().then(() => {
-      fixture = TestBed.createComponent(UserListComponent);
-      userList = fixture.componentInstance;
+      fixture = TestBed.createComponent(TodoListComponent);
+      todoList = fixture.componentInstance;
       fixture.detectChanges();
     });
   }));
 
-  it('generates an error if we don\'t set up a UserListService', () => {
-    // Since the observer throws an error, we don't expect users to be defined.
-    expect(userList.serverFilteredUsers).toBeUndefined();
+  it('generates an error if we don\'t set up a TodoListService', () => {
+    // Since the observer throws an error, we don't expect todos to be defined.
+    expect(todoList.serverFilteredTodos).toBeUndefined();
   });
 });

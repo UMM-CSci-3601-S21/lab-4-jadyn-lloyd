@@ -1,14 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { User } from './todo';
+import { Todo } from './todo';
 
 @Component({
   selector: 'app-user-card',
-  templateUrl: './user-card.component.html',
-  styleUrls: ['./user-card.component.scss']
+  templateUrl: './todo-card.component.html',
+  styleUrls: ['./todo-card.component.scss']
 })
-export class UserCardComponent implements OnInit {
+export class TodoCardComponent implements OnInit {
 
-  @Input() user: User;
+  @Input() user: Todo;
   @Input() simple ? = false;
 
   constructor() { }

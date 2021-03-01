@@ -1,45 +1,47 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { User, UserRole } from './todo';
-import { UserService } from './todo.service';
+import { Todo } from './todo';
+import { TodoService } from './todo.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-user-list-component',
-  templateUrl: 'user-list.component.html',
-  styleUrls: ['./user-list.component.scss'],
+  selector: 'app-todo-list-component',
+  templateUrl: 'todo-list.component.html',
+  styleUrls: ['./todo-list.component.scss'],
   providers: []
 })
 
-export class UserListComponent implements OnInit, OnDestroy  {
+export class TodoListComponent implements OnInit, OnDestroy  {
   // These are public so that tests can reference them (.spec.ts)
-  public serverFilteredUsers: User[];
-  public filteredUsers: User[];
+  public serverFilteredTodos: Todo[];
+  public filteredTodos: Todo[];
 
-  public userName: string;
-  public userAge: number;
-  public userRole: UserRole;
-  public userCompany: string;
+  public todoId: string;
+  public todoOwner: string;
+  public todoStatus: boolean;
+  public todoCategory: string;
+  public todoBody: string;
+
   public viewType: 'card' | 'list' = 'card';
-  getUsersSub: Subscription;
+  getTodosSub: Subscription;
 
 
-  // Inject the UserService into this component.
+  // Inject the TodoService into this component.
   // That's what happens in the following constructor.
   //
   // We can call upon the service for interacting
   // with the server.
 
-  constructor(private userService: UserService) {
+  constructor(private todoService: TodoService) {
 
   }
 
-  getUsersFromServer(): void {
+  getTodosFromServer(): void {
     this.unsub();
-    this.getUsersSub = this.userService.getUsers({
-      role: this.userRole,
-      age: this.userAge
-    }).subscribe(returnedUsers => {
-      this.serverFilteredUsers = returnedUsers;
+    this.getTodosSub = this.todoService.getTodos({
+      role: this.todoRole,
+      age: this.todoAge
+    }).subscribe(returnedTodos => {
+      this.serverFilteredTodos = returnedTodos;
       this.updateFilter();
     }, err => {
       console.log(err);
@@ -47,16 +49,16 @@ export class UserListComponent implements OnInit, OnDestroy  {
   }
 
   public updateFilter(): void {
-    this.filteredUsers = this.userService.filterUsers(
-      this.serverFilteredUsers, { name: this.userName, company: this.userCompany });
+    this.filteredTodos = this.todoService.filterTodos(
+      this.serverFilteredTodos, { name: this.todoName, company: this.todoCompany });
   }
 
   /**
-   * Starts an asynchronous operation to update the users list
+   * Starts an asynchronous operation to update the todos list
    *
    */
   ngOnInit(): void {
-    this.getUsersFromServer();
+    this.getTodosFromServer();
   }
 
   ngOnDestroy(): void {
@@ -64,8 +66,8 @@ export class UserListComponent implements OnInit, OnDestroy  {
   }
 
   unsub(): void {
-    if (this.getUsersSub) {
-      this.getUsersSub.unsubscribe();
+    if (this.getTodosSub) {
+      this.getTodosSub.unsubscribe();
     }
   }
 }
