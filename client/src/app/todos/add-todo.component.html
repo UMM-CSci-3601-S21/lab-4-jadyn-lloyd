@@ -20,6 +20,7 @@ is potentially helpful and contributed to the shaping of this example -->
               </mat-error>
             </mat-error>
           </mat-form-field>
+
           <mat-form-field>
             <mat-label>Status</mat-label>
             <input matInput type="boolean" placeholder="status"
@@ -31,8 +32,10 @@ is potentially helpful and contributed to the shaping of this example -->
               </mat-error>
             </mat-error>
           </mat-form-field>
-          <mat-label>Category</mat-label>
-          <input matInput placeholder="Category" formControlOwner="Category"
+
+          <mat-form-field>
+            <mat-label>Category</mat-label>
+              <input matInput placeholder="Category" formControlOwner="Category"
                 required>
           <mat-error *ngFor="let validation of addTodoValidationMessages.category">
             <mat-error class="error-message" data-test="categoryError"
@@ -41,6 +44,8 @@ is potentially helpful and contributed to the shaping of this example -->
             </mat-error>
           </mat-error>
         </mat-form-field>
+
+        <mat-form-field>
         <mat-label>Body</mat-label>
         <input matInput placeholder="Body" formControlOwner="Body"
               required>
@@ -51,6 +56,8 @@ is potentially helpful and contributed to the shaping of this example -->
           </mat-error>
         </mat-error>
       </mat-form-field>
+
+      </mat-card-content>
         <mat-card-actions align="end">
           <button
             mat-button
