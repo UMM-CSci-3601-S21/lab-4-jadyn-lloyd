@@ -12,6 +12,7 @@ import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 
 import umm3601.user.UserController;
+import umm3601.todos.TodosController;
 
 public class Server {
 
@@ -36,6 +37,7 @@ public class Server {
 
     // Initialize dependencies
     UserController userController = new UserController(database);
+    TodosController todosController = new TodosController(database);
 
     Javalin server = Javalin.create(config -> {
       config.registerPlugin(new RouteOverviewPlugin("/api"));
@@ -69,6 +71,19 @@ public class Server {
     // Add new user with the user info being in the JSON body
     // of the HTTP request
     server.post("/api/users", userController::addNewUser);
+
+    // List todos, filtered using query parameters
+    server.get("/api/todos", todosController::getTodos);
+
+    // Get the specified todo
+    server.get("/api/todos/:id", todosController::getTodo);
+
+    // Delete the specified todo
+    server.delete("/api/todos/:id", todosController::deleteTodo);
+
+    // Add new todo with the todo info being in the JSON body
+    // of the HTTP request
+    server.post("/api/todos", todosController::addNewTodo);
 
     server.exception(Exception.class, (e, ctx) -> {
       ctx.status(500);
