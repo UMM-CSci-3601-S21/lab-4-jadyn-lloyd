@@ -32,8 +32,8 @@ public class TodosController {
   private static final String OWNER_KEY = "owner";
   private static final String CATEGORY_KEY = "category";
   private static final String BODY_KEY = "body";
+  private static final String STATUS_KEY = "status";
 
-  static String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
   private final JacksonMongoCollection<Todos> todosCollection;
 
@@ -87,8 +87,7 @@ public class TodosController {
     List<Bson> filters = new ArrayList<>(); // start with a blank document
 
     if (ctx.queryParamMap().containsKey(OWNER_KEY)) {
-        int targetOwner = ctx.queryParam(OWNER_KEY, Integer.class).get();
-        filters.add(eq(OWNER_KEY, targetOwner));
+        filters.add(regex(OWNER_KEY, Pattern.quote(ctx.queryParam(OWNER_KEY)),"i"));
     }
 
     if (ctx.queryParamMap().containsKey(BODY_KEY)) {
@@ -99,7 +98,12 @@ public class TodosController {
       filters.add(eq(CATEGORY_KEY, ctx.queryParam(CATEGORY_KEY)));
     }
 
-    String sortBy = ctx.queryParam("sortby", "name"); //Sort by sort query param, default is owner
+    if (ctx.queryParamMap().containsKey(STATUS_KEY)) {
+      boolean targetBoolean = ctx.queryParam(STATUS_KEY,Boolean.class).get();
+      filters.add(eq(STATUS_KEY,  targetBoolean));
+    }
+
+    String sortBy = ctx.queryParam("sortby", "owner"); //Sort by sort query param, default is owner
     String sortOrder = ctx.queryParam("sortorder", "asc");
 
     ctx.json(todosCollection.find(filters.isEmpty() ? new Document() : and(filters))
@@ -108,36 +112,22 @@ public class TodosController {
   }
 
   /**
-   * Get a JSON response with a list of all the todos.
+   * Add a new todo
    *
    * @param ctx a Javalin HTTP context
    */
   public void addNewTodo(Context ctx) {
+
     Todos newTodo = ctx.bodyValidator(Todos.class)
       .check(todo -> todo.owner != null && todo.owner.length() > 0) //Verify that the todo has an owner that is not blank
+      .check(todo -> todo.status == true || todo.status == false) // Verify that the todo has a status that is either true or false
       .check(todo -> todo.category != null && todo.category.length() > 0) // Verify that the todo has a category that is not blank
       .check(todo -> todo.body != null && todo.body.length() > 0) // Verify that the todo has a body that is not blank
+
       .get();
 
     todosCollection.insertOne(newTodo);
     ctx.status(201);
     ctx.json(ImmutableMap.of("id", newTodo._id));
-  }
-
-  /**
-   * Utility function to generate the md5 hash for a given string
-   *
-   * @param str the string to generate a md5 for
-   */
-  @SuppressWarnings("lgtm[java/weak-cryptographic-algorithm]")
-  public String md5(String str) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    byte[] hashInBytes = md.digest(str.toLowerCase().getBytes(StandardCharsets.UTF_8));
-
-    StringBuilder result = new StringBuilder();
-    for (byte b : hashInBytes) {
-      result.append(String.format("%02x", b));
-    }
-    return result.toString();
   }
 }
