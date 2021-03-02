@@ -2,61 +2,65 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { User, UserRole } from './todo';
+import { Todo } from './todo';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TodoService {
-  readonly userUrl: string = environment.apiUrl + 'todos';
+  readonly todoUrl: string = environment.apiUrl + 'todos';
 
   constructor(private httpClient: HttpClient) {
   }
 
-  getTodos(filters?: { role?: UserRole; age?: number; company?: string }): Observable<User[]> {
+  getTodos(filters?: { _id?: string; owner?: string; category?: string }): Observable<Todo[]> {
     let httpParams: HttpParams = new HttpParams();
     if (filters) {
-      if (filters.role) {
-        httpParams = httpParams.set('role', filters.role);
+      if (filters._id) {
+        filters._id = filters._id.toLowerCase();
+        httpParams = httpParams.set('id', filters._id);
       }
-      if (filters.age) {
-        httpParams = httpParams.set('age', filters.age.toString());
+      if (filters.owner) {
+        filters.owner = filters.owner.toLowerCase();
+        httpParams = httpParams.set('owner', filters.owner);
       }
-      if (filters.company) {
-        httpParams = httpParams.set('company', filters.company);
+      if (filters.category) {
+        filters.category = filters.category.toLowerCase();
+        httpParams = httpParams.set('category', filters.category);
       }
     }
-    return this.httpClient.get<User[]>(this.userUrl, {
+    return this.httpClient.get<Todo[]>(this.todoUrl, {
       params: httpParams,
     });
   }
 
-  getUserById(id: string): Observable<User> {
-    return this.httpClient.get<User>(this.userUrl + '/' + id);
+  getTodoById(id: string): Observable<Todo> {
+    return this.httpClient.get<Todo>(this.todoUrl + '/' + id);
   }
 
-  filterUsers(users: User[], filters: { name?: string; company?: string }): User[] {
+  filterTodos(todos: Todo[], filters: { _id?: string; owner?: string; category?: string }): Todo[] {
 
-    let filteredUsers = users;
+    let filteredTodos = todos;
 
     // Filter by name
-    if (filters.name) {
-      filters.name = filters.name.toLowerCase();
-
-      filteredUsers = filteredUsers.filter(user => user.name.toLowerCase().indexOf(filters.name) !== -1);
+    if (filters._id) {
+      filteredTodos = filteredTodos.filter(todo => todo._id.indexOf(filters._id) !== -1);
     }
 
     // Filter by company
-    if (filters.company) {
-      filters.company = filters.company.toLowerCase();
-
-      filteredUsers = filteredUsers.filter(user => user.company.toLowerCase().indexOf(filters.company) !== -1);
+    if (filters.owner) {
+      filteredTodos = filteredTodos.filter(todo => todo.owner.indexOf(filters.owner) !== -1);
     }
 
-    return filteredUsers;
+    // Filter by category
+    if (filters.category) {
+      filteredTodos = filteredTodos.filter(todo => todo.category.indexOf(filters.category) !== -1);
+    }
+
+    return filteredTodos;
   }
 
-  addUser(newUser: User): Observable<string> {
-    // Send post request to add a new user with the user data as the body.
-    return this.httpClient.post<{id: string}>(this.userUrl, newUser).pipe(map(res => res.id));
+  addTodo(newTodo: Todo): Observable<string> {
+    // Send post request to add a new todo with the todo data as the body.
+    return this.httpClient.post<{id: string}>(this.todoUrl, newTodo).pipe(map(res => res.id));
   }
 }

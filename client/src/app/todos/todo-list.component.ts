@@ -38,8 +38,9 @@ export class TodoListComponent implements OnInit, OnDestroy  {
   getTodosFromServer(): void {
     this.unsub();
     this.getTodosSub = this.todoService.getTodos({
-      role: this.todoRole,
-      age: this.todoAge
+      _id: this.todoId,
+      owner: this.todoOwner,
+      category: this.todoCategory
     }).subscribe(returnedTodos => {
       this.serverFilteredTodos = returnedTodos;
       this.updateFilter();
@@ -50,7 +51,7 @@ export class TodoListComponent implements OnInit, OnDestroy  {
 
   public updateFilter(): void {
     this.filteredTodos = this.todoService.filterTodos(
-      this.serverFilteredTodos, { name: this.todoName, company: this.todoCompany });
+      this.serverFilteredTodos, { _id: this.todoId, owner: this.todoOwner, category: this.todoCategory });
   }
 
   /**

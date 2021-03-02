@@ -1,41 +1,35 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { User } from './todo';
-import { UserService } from './todo.service';
+import { Todo } from './todo';
+import { TodoService } from './todo.service';
 
-describe('User service: ', () => {
-  // A small collection of test users
-  const testUsers: User[] = [
+describe('Todo service: ', () => {
+  // A small collection of test todos
+  const testTodos: Todo[] = [
     {
       _id: 'chris_id',
-      name: 'Chris',
-      age: 25,
-      company: 'UMM',
-      email: 'chris@this.that',
-      role: 'admin',
-      avatar: 'https://gravatar.com/avatar/8c9616d6cc5de638ea6920fb5d65fc6c?d=identicon'
+      owner: 'Chris',
+      status: true,
+      category: 'video games',
+      body: 'play video games too much'
     },
     {
       _id: 'pat_id',
-      name: 'Pat',
-      age: 37,
-      company: 'IBM',
-      email: 'pat@something.com',
-      role: 'editor',
-      avatar: 'https://gravatar.com/avatar/b42a11826c3bde672bce7e06ad729d44?d=identicon'
+      owner: 'Pat',
+      status: false,
+      category: 'procrastination',
+      body: 'Do not procrastinate'
     },
     {
       _id: 'jamie_id',
-      name: 'Jamie',
-      age: 37,
-      company: 'Frogs, Inc.',
-      email: 'jamie@frogs.com',
-      role: 'viewer',
-      avatar: 'https://gravatar.com/avatar/d4a6c71dd9470ad4cf58f78c100258bf?d=identicon'
+      owner: 'Jamie',
+      status: false,
+      category: 'grades',
+      body: 'Get good grades'
     }
   ];
-  let userService: UserService;
+  let todoService: TodoService;
   // These are used to mock the HTTP requests so that we (a) don't have to
   // have the server running and (b) we can check exactly which HTTP
   // requests were made to ensure that we're making the correct requests.
@@ -51,7 +45,7 @@ describe('User service: ', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
     // Construct an instance of the service with the mock
     // HTTP client.
-    userService = new UserService(httpClient);
+    todoService = new TodoService(httpClient);
   });
 
   afterEach(() => {
@@ -59,132 +53,112 @@ describe('User service: ', () => {
     httpTestingController.verify();
   });
 
-  it('getUsers() calls api/users', () => {
-    // Assert that the users we get from this call to getUsers()
-    // should be our set of test users. Because we're subscribing
-    // to the result of getUsers(), this won't actually get
+  it('getTodos() calls api/todos', () => {
+    // Assert that the todos we get from this call to getTodos()
+    // should be our set of test todos. Because we're subscribing
+    // to the result of getTodos(), this won't actually get
     // checked until the mocked HTTP request 'returns' a response.
-    // This happens when we call req.flush(testUsers) a few lines
+    // This happens when we call req.flush(testTodos) a few lines
     // down.
-    userService.getUsers().subscribe(
-      users => expect(users).toBe(testUsers)
+    todoService.getTodos().subscribe(
+      todos => expect(todos).toBe(testTodos)
     );
 
     // Specify that (exactly) one request will be made to the specified URL.
-    const req = httpTestingController.expectOne(userService.userUrl);
+    const req = httpTestingController.expectOne(todoService.todoUrl);
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
     // Specify the content of the response to that request. This
     // triggers the subscribe above, which leads to that check
     // actually being performed.
-    req.flush(testUsers);
+    req.flush(testTodos);
   });
 
-  it('getUsers() calls api/users with filter parameter \'admin\'', () => {
+  it('getTodos() calls api/todos with filter parameter \'_id\'', () => {
 
-    userService.getUsers({ role: 'admin' }).subscribe(
-      users => expect(users).toBe(testUsers)
+    todoService.getTodos({ _id: 'chris_id' }).subscribe(
+      todos => expect(todos).toBe(testTodos)
     );
 
     // Specify that (exactly) one request will be made to the specified URL with the role parameter.
     const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(userService.userUrl) && request.params.has('role')
+      (request) => request.url.startsWith(todoService.todoUrl) && request.params.has('id')
     );
 
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
     // Check that the role parameter was 'admin'
-    expect(req.request.params.get('role')).toEqual('admin');
+    expect(req.request.params.get('id')).toEqual('chris_id');
 
-    req.flush(testUsers);
+    req.flush(testTodos);
   });
 
-  it('getUsers() calls api/users with filter parameter \'age\'', () => {
+  it('getTodos() calls api/todos with multiple filter parameters', () => {
 
-    userService.getUsers({ age: 25 }).subscribe(
-      users => expect(users).toBe(testUsers)
+    todoService.getTodos({ _id: 'chris_id', owner: 'Chris', category: 'video games' }).subscribe(
+      todos => expect(todos).toBe(testTodos)
     );
 
     // Specify that (exactly) one request will be made to the specified URL with the role parameter.
     const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(userService.userUrl) && request.params.has('age')
-    );
-
-    // Check that the request made to that URL was a GET request.
-    expect(req.request.method).toEqual('GET');
-
-    // Check that the role parameter was 'admin'
-    expect(req.request.params.get('age')).toEqual('25');
-
-    req.flush(testUsers);
-  });
-
-  it('getUsers() calls api/users with multiple filter parameters', () => {
-
-    userService.getUsers({ role: 'editor', company: 'IBM', age: 37 }).subscribe(
-      users => expect(users).toBe(testUsers)
-    );
-
-    // Specify that (exactly) one request will be made to the specified URL with the role parameter.
-    const req = httpTestingController.expectOne(
-      (request) => request.url.startsWith(userService.userUrl)
-        && request.params.has('role') && request.params.has('company') && request.params.has('age')
+      (request) => request.url.startsWith(todoService.todoUrl)
+        && request.params.has('id') && request.params.has('owner') && request.params.has('category')
     );
 
     // Check that the request made to that URL was a GET request.
     expect(req.request.method).toEqual('GET');
 
     // Check that the role parameters are correct
-    expect(req.request.params.get('role')).toEqual('editor');
-    expect(req.request.params.get('company')).toEqual('IBM');
-    expect(req.request.params.get('age')).toEqual('37');
+    expect(req.request.params.get('id')).toEqual('chris_id');
+    expect(req.request.params.get('owner')).toEqual('Chris');
+    expect(req.request.params.get('category')).toEqual('video games');
 
-    req.flush(testUsers);
+    req.flush(testTodos);
   });
 
-  it('getUserById() calls api/users/id', () => {
-    const targetUser: User = testUsers[1];
-    const targetId: string = targetUser._id;
-    userService.getUserById(targetId).subscribe(
-      user => expect(user).toBe(targetUser)
+  it('getTodoById() calls api/todos/id', () => {
+    const targetTodo: Todo = testTodos[1];
+    const targetId: string = targetTodo._id;
+    todoService.getTodoById(targetId).subscribe(
+      todo => expect(todo).toBe(targetTodo)
     );
 
-    const expectedUrl: string = userService.userUrl + '/' + targetId;
+    const expectedUrl: string = todoService.todoUrl + '/' + targetId;
     const req = httpTestingController.expectOne(expectedUrl);
     expect(req.request.method).toEqual('GET');
-    req.flush(targetUser);
+    req.flush(targetTodo);
   });
 
-  it('filterUsers() filters by name', () => {
-    expect(testUsers.length).toBe(3);
-    const userName = 'a';
-    expect(userService.filterUsers(testUsers, { name: userName }).length).toBe(2);
+  it('filterTodos() filters by owner', () => {
+    expect(testTodos.length).toBe(3);
+    const todoOwner = 'Chris';
+    expect(todoService.filterTodos(testTodos, { owner: todoOwner }).length).toBe(1);
   });
 
-  it('filterUsers() filters by company', () => {
-    expect(testUsers.length).toBe(3);
-    const userCompany = 'UMM';
-    expect(userService.filterUsers(testUsers, { company: userCompany }).length).toBe(1);
+  it('filterTodos() filters by category', () => {
+    expect(testTodos.length).toBe(3);
+    const todoCategory = 'video games';
+    expect(todoService.filterTodos(testTodos, { category: todoCategory }).length).toBe(1);
   });
 
-  it('filterUsers() filters by name and company', () => {
-    expect(testUsers.length).toBe(3);
-    const userCompany = 'UMM';
-    const userName = 'chris';
-    expect(userService.filterUsers(testUsers, { name: userName, company: userCompany }).length).toBe(1);
+  it('filterTodos() filters by category and owner', () => {
+    expect(testTodos.length).toBe(3);
+    const todoCategory = 'video games';
+    const todoOwner = 'Chris';
+    expect(todoService.filterTodos(testTodos, { category: todoCategory, owner: todoOwner }).length).toBe(1);
   });
 
-  it('addUser() posts to api/users', () => {
+  it('addTodo() posts to api/todos', () => {
 
-    userService.addUser(testUsers[1]).subscribe(
+    todoService.addTodo(testTodos[1]).subscribe(
       id => expect(id).toBe('testid')
     );
 
-    const req = httpTestingController.expectOne(userService.userUrl);
+    const req = httpTestingController.expectOne(todoService.todoUrl);
 
     expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(testUsers[1]);
+    expect(req.request.body).toEqual(testTodos[1]);
 
     req.flush({id: 'testid'});
   });
