@@ -19,12 +19,6 @@ export class AddTodoComponent implements OnInit {
     // not sure if this name is magical and making it be found or if I'm missing something,
   // but this is where the red text that shows up (when there is invalid input) comes from
   addTodoValidationMessages = {
-    _id: [
-      {type: 'required', message: 'An id is required'},
-      {type: 'minlength', message: 'id must be at least 4 characters long'},
-      {type: 'maxlength', message: 'id cannot be more than 50 characters long'},
-      {type: 'existingId', message: 'id has already been taken'}
-    ],
     owner: [
       {type: 'required', message: 'An owner is required'},
       {type: 'minlength', message: 'Owner name must be at least 2 characters long'},
@@ -53,18 +47,6 @@ export class AddTodoComponent implements OnInit {
     // add user form validations
     this.addTodoForm = this.fb.group({
       // We allow alphanumeric input and limit the length for name.
-      _id: new FormControl('', Validators.compose([
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(50),
-        (fc) => {
-          if (fc.value.toLowerCase() === 'abc123' || fc.value.toLowerCase() === '123abc') {
-            return ({existingId: true});
-          } else {
-            return null;
-          }
-        },
-      ])),
       owner: new FormControl('', Validators.compose([
         Validators.required,
         Validators.minLength(2),
@@ -92,7 +74,7 @@ export class AddTodoComponent implements OnInit {
 
 
   submitForm() {
-    this.todoService.addUser(this.addTodoForm.value).subscribe(newID => {
+    this.todoService.addTodo(this.addTodoForm.value).subscribe(newID => {
       this.snackBar.open('Added Todo ' + this.addTodoForm.value.name, null, {
         duration: 2000,
       });

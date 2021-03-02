@@ -62,45 +62,6 @@ describe('AddTodoComponent', () => {
     expect(addTodoForm.valid).toBeFalsy();
   });
 
-  describe('The id field', () => {
-    let idControl: AbstractControl;
-
-    beforeEach(() => {
-      idControl = addTodoComponent.addTodoForm.controls.id;
-    });
-
-    it('should not allow empty id names', () => {
-      idControl.setValue('');
-      expect(idControl.valid).toBeFalsy();
-    });
-
-    it('should be fine with "longnamed_id"', () => {
-      idControl.setValue('longnamed_id');
-      expect(idControl.valid).toBeTruthy();
-    });
-
-    it('should fail on single character id names', () => {
-      idControl.setValue('x');
-      expect(idControl.valid).toBeFalsy();
-      // Annoyingly, Angular uses lowercase 'l' here
-      // when it's an upper case 'L' in `Validators.minLength(2)`.
-      expect(idControl.hasError('minlength')).toBeTruthy();
-    });
-
-    it('should fail on really long id names', () => {
-      idControl.setValue('x'.repeat(100));
-      expect(idControl.valid).toBeFalsy();
-      // Annoyingly, Angular uses lowercase 'l' here
-      // when it's an upper case 'L' in `Validators.maxLength(2)`.
-      expect(idControl.hasError('maxlength')).toBeTruthy();
-    });
-
-    it('should allow digits and underscores in the id name', () => {
-      idControl.setValue('Bad_2_Th3_B0ne_id');
-      expect(idControl.valid).toBeTruthy();
-    });
-  });
-
   describe('The owner field', () => {
     let ownerControl: AbstractControl;
 

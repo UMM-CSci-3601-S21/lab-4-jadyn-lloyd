@@ -1,15 +1,14 @@
-<mat-card class="user-card" *ngIf="this.user">
+<mat-card class="todo-card" *ngIf="this.todo">
   <mat-card-header>
-    <img mat-card-avatar [src]="this.user.avatar" class="user-avatar" *ngIf="this.user.avatar">
-    <mat-card-title class="user-card-name">{{ this.user.name }}</mat-card-title>
-    <mat-card-subtitle class="user-card-company">{{ this.user.company }}</mat-card-subtitle>
+    <mat-card-title class="todo-card-owner">{{ this.todo.owner }}</mat-card-title>
+    <mat-card-subtitle class="todo-card-category">{{ this.todo.category }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content *ngIf="!this.simple">
-    <p>Role: <span class="user-card-role">{{ this.user.role }}</span></p>
-    <p>Age: <span class="user-card-age">{{ this.user.age }}</span></p>
-    <p>Email: <a href="mailto:{{this.user.email}}" class="user-card-email">{{this.user.email}}</a></p>
+    <p>Status: <span class="todo-card-status">{{ this.todo.status }}</span></p>
+    <p>Body: <span class="todo-card-body">{{ this.todo.body }}</span></p>
+    <p>Id: <span class="todo-card-id">{{ this.todo._id }}</span></p>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button data-test="viewProfileButton" *ngIf="this.simple" [routerLink]="['/users', this.user._id]">View Profile</button>
+    <button mat-button data-test="viewTodoButton" *ngIf="this.simple" [routerLink]="['/todos', this.todo._id]">View Todo</button>
   </mat-card-actions>
 </mat-card>
