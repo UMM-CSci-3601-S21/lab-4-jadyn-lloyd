@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Todo } from './todo';
 
 @Component({
-  selector: 'app-user-card',
+  selector: 'app-todo-card',
   templateUrl: './todo-card.component.html',
   styleUrls: ['./todo-card.component.scss']
 })

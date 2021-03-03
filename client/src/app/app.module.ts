@@ -33,6 +33,12 @@ import { UserCardComponent } from './users/user-card.component';
 import { UserProfileComponent } from './users/user-profile.component';
 import { AddUserComponent } from './users/add-user.component';
 
+import { TodoListComponent } from './todos/todo-list.component';
+import { TodoService } from './todos/todo.service';
+import { TodoCardComponent } from './todos/todo-card.component';
+import { TodoProfileComponent } from './todos/todo-profile.component';
+import { AddTodoComponent } from './todos/add-todo.component';
+
 const MATERIAL_MODULES: any[] = [
   MatListModule,
   MatButtonModule,
@@ -60,6 +66,10 @@ const MATERIAL_MODULES: any[] = [
     UserCardComponent,
     UserProfileComponent,
     AddUserComponent,
+    TodoListComponent,
+    TodoCardComponent,
+    TodoProfileComponent,
+    AddTodoComponent,
   ],
   imports: [
     BrowserModule,
@@ -73,7 +83,8 @@ const MATERIAL_MODULES: any[] = [
     LayoutModule,
   ],
   providers: [
-    UserService
+    UserService,
+    TodoService
   ],
   bootstrap: [AppComponent]
 })
