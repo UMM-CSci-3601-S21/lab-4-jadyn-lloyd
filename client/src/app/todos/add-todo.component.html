@@ -15,7 +15,7 @@ is potentially helpful and contributed to the shaping of this example -->
                   required>
             <mat-error *ngFor="let validation of addTodoValidationMessages.owner">
               <mat-error class="error-message" data-test="nameError"
-                        *ngIf="addTodoForm.get('name').hasError(validation.type) && (addTodoForm.get('owner').dirty || addTodoForm.get('owner').touched)">
+                        *ngIf="addTodoForm.get('owner').hasError(validation.type) && (addTodoForm.get('owner').dirty || addTodoForm.get('owner').touched)">
                 {{validation.message}}
               </mat-error>
             </mat-error>
@@ -37,7 +37,7 @@ is potentially helpful and contributed to the shaping of this example -->
             <mat-label>Body</mat-label>
             <input matInput type="Body" placeholder="body"
                   formControlName="body" required>
-            <mat-error *ngFor="let validation of addTodoValidationMessages.category">
+            <mat-error *ngFor="let validation of addTodoValidationMessages.body">
               <mat-error class="error-message" data-test="bodyError"
                         *ngIf="addTodoForm.get('body').hasError(validation.type) && (addTodoForm.get('body').dirty || addTodoForm.get('body').touched)">
                 {{validation.message}}
