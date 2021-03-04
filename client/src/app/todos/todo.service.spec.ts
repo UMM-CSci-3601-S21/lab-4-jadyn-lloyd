@@ -111,7 +111,7 @@ describe('Todo service: ', () => {
 
     // Check that the role parameters are correct
     expect(req.request.params.get('id')).toEqual('chris_id');
-    expect(req.request.params.get('owner')).toEqual('Chris');
+    expect(req.request.params.get('owner')).toEqual('chris');
     expect(req.request.params.get('category')).toEqual('video games');
 
     req.flush(testTodos);
